@@ -20,18 +20,48 @@ Producer → Kafka (transactions) → Anomaly Detector → Kafka (fraud-alerts) 
 | Dashboard frontend | Vanilla JS + Chart.js |
 | Orchestration | Docker Compose |
 
-## Quick start
+## Hướng dẫn chạy dự án bằng Docker (Quick start)
+
+Dự án được triển khai dễ dàng thông qua Docker Compose. Hãy đảm bảo bạn đã cài đặt Docker và Docker Compose trên máy của mình.
+
+### 1. Khởi chạy toàn bộ hệ thống
+Sử dụng lệnh sau để build các images và chạy các containers ở chế độ ngầm (detached mode):
 
 ```bash
-make up
-# Dashboard → http://localhost:8080
+docker compose up --build -d
 ```
+*(Hoặc dùng Makefile: `make up`)*
 
-Tear down:
+Sau khi hệ thống khởi động hoàn tất, bạn có thể truy cập **Dashboard giám sát** tại địa chỉ:
+👉 **[http://localhost:8080](http://localhost:8080)**
+
+### 2. Xem logs của hệ thống
+Để theo dõi quá trình sinh dữ liệu hoặc phát hiện gian lận theo thời gian thực:
+
 ```bash
-make down   # keep volumes
-make clean  # remove volumes too
+# Xem toàn bộ logs:
+docker compose logs -f
+
+# Hoặc chỉ xem logs của một số dịch vụ cụ thể:
+docker compose logs -f producer processor dashboard
 ```
+*(Hoặc dùng Makefile: `make logs`)*
+
+### 3. Tạm dừng hệ thống (Giữ lại dữ liệu)
+Để tắt các containers nhưng vẫn giữ lại cấu hình volumes (dữ liệu của Kafka, Redis):
+
+```bash
+docker compose down
+```
+*(Hoặc dùng Makefile: `make down`)*
+
+### 4. Tắt và xoá sạch dữ liệu (Clean)
+Nếu bạn muốn reset hoàn toàn trạng thái (xoá cả containers, networks, và volumes dữ liệu):
+
+```bash
+docker compose down -v --remove-orphans
+```
+*(Hoặc dùng Makefile: `make clean`)*
 
 ## Fraud detection rules
 
